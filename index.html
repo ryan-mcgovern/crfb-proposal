@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRFB x LinkGraph - Campaign Proposal</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap');
+
+:root{
+  --lg-black:#000000;--lg-white:#FFFFFF;--lg-grey:#3E3E3E;
+  --lg-pink:#FF268E;--lg-orange:#FD8460;
+  --lg-gradient:linear-gradient(90deg,#FF268E 0%,#FF2D84 30%,#FF644D 70%,#FD8460 100%);
+  --lg-ink:#17171A;--lg-ink-3:#18181B;--lg-ink-4:#1F1F1F;
+  --page-bg:#f5f5f5;--surface:#f9f9f7;--border:#e5e5e5;
+  --text:#1a1a1a;--text-mid:#555;--text-dim:#777;
+  --green:#1a7a4a;--green-bg:#e8f5ee;--amber:#d4780a;--amber-bg:#fdf3e5;
+  --blue:#2874a6;--blue-bg:#ebf5fb;
+  --radius:10px;--shadow:0 2px 12px rgba(0,0,0,.06);
+  --font-display:'Anton','Bebas Neue','Impact',sans-serif;
+  --font-sans:'Instrument Sans','Helvetica Neue','Segoe UI',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font-sans);background:var(--page-bg);color:var(--text);line-height:1.65;font-size:15px;-webkit-font-smoothing:antialiased;}
+
+.grad-text{background:var(--lg-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+/* Topbar */
+.topbar{position:sticky;top:0;z-index:200;background:var(--lg-black);display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:62px;border-bottom:3px solid transparent;border-image:var(--lg-gradient) 1;}
+.topbar-brand{font-family:var(--font-display);font-size:21px;letter-spacing:2.5px;text-transform:uppercase;}
+.topbar-meta{font-size:11px;color:rgba(255,255,255,.55);letter-spacing:1.5px;text-transform:uppercase;}
+
+/* Hero - black-first brand canvas */
+.hero{background:var(--lg-black);color:var(--lg-white);padding:56px 40px 48px;position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;top:-220px;right:-180px;width:560px;height:560px;border-radius:50%;background:radial-gradient(circle,rgba(255,38,142,.22) 0%,rgba(253,132,96,.08) 45%,transparent 70%);pointer-events:none;}
+.hero-inner{max-width:1080px;margin:0 auto;position:relative;z-index:1;}
+.hero-eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--lg-pink);font-weight:700;margin-bottom:14px;}
+.hero-heading{font-family:var(--font-display);font-size:54px;letter-spacing:1px;text-transform:uppercase;line-height:1.02;margin-bottom:16px;font-weight:400;}
+.hero-sub{font-size:16px;color:rgba(255,255,255,.72);max-width:760px;margin-bottom:8px;line-height:1.7;}
+.hero-prep{display:flex;gap:48px;margin-top:26px;padding-top:22px;border-top:1px solid rgba(255,255,255,.12);flex-wrap:wrap;}
+.prep-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:4px;}
+.prep-val{font-size:14px;font-weight:600;color:var(--lg-white);}
+.prep-val span{color:rgba(255,255,255,.6);font-weight:400;}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:30px;}
+.kpi-card{background:var(--lg-ink-3);border:1px solid rgba(255,255,255,.10);border-radius:12px;padding:20px 18px 16px;position:relative;overflow:hidden;}
+.kpi-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--lg-gradient);}
+.kpi-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:9px;}
+.kpi-value{font-family:var(--font-display);font-size:34px;line-height:1;display:block;margin-bottom:5px;background:var(--lg-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.kpi-sub{font-size:12px;color:rgba(255,255,255,.55);}
+
+/* Report body */
+.report{max-width:1080px;margin:30px auto 60px;padding:0 20px;}
+.section{background:var(--lg-white);border:1px solid var(--border);border-radius:var(--radius);padding:34px 38px;margin-bottom:22px;box-shadow:var(--shadow);scroll-margin-top:82px;}
+.sec-num{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--lg-pink);margin-bottom:4px;}
+.sec-title{font-family:var(--font-display);font-size:27px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;line-height:1.05;font-weight:400;}
+.sec-rule{width:42px;height:3px;background:var(--lg-gradient);border-radius:2px;margin-bottom:22px;}
+.narrative{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--lg-pink);border-radius:0 6px 6px 0;padding:16px 20px;font-size:14px;color:var(--text-mid);line-height:1.75;margin-bottom:20px;}
+.narrative strong{color:var(--text);}
+.info-note{background:var(--blue-bg);border:1px solid #b3d5e7;border-left:4px solid var(--blue);border-radius:8px;padding:12px 16px;font-size:13px;color:#1a5a82;margin-bottom:18px;line-height:1.6;}
+.info-note strong{color:inherit;font-weight:700;}
+.subsec-label{font-size:11px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--text-mid);margin:24px 0 12px;display:flex;align-items:center;gap:8px;}
+.subsec-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* Tables */
+.data-table{width:100%;border-collapse:collapse;font-size:14px;margin-bottom:8px;background:var(--lg-white);border-radius:8px;overflow:hidden;box-shadow:var(--shadow);}
+.data-table thead tr{background:var(--lg-black);}
+.data-table thead th{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#fff;padding:11px 13px;text-align:left;}
+.data-table tbody tr{border-bottom:1px solid var(--border);}
+.data-table tbody tr:nth-child(even){background:var(--page-bg);}
+.data-table tbody td{padding:10px 13px;color:var(--text-mid);vertical-align:top;}
+.data-table tbody td strong{color:var(--text);font-weight:600;}
+.mono{font-family:ui-monospace,'SF Mono',Consolas,monospace;background:#f3f4f6;padding:1px 6px;border-radius:3px;font-size:12px;color:#1f2937;}
+.num{font-variant-numeric:tabular-nums;font-weight:600;color:var(--text);}
+.pill{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;text-transform:uppercase;letter-spacing:.3px;}
+.pill-med{background:#dcf2e3;color:#1a7a4a;border:1px solid #bbe3cc;}
+.pill-hard{background:#fdecc8;color:#7a4a00;border:1px solid #f5d29c;}
+.pill-qual{background:#eee;color:#555;border:1px solid #d5d5d5;}
+.pill-free{background:#fde8f1;color:#b3145f;border:1px solid #f7bcd8;}
+.pill-explore{background:var(--amber-bg);color:#7a4a00;border:1px solid #f5d29c;}
+.pill-house{background:#fde8f1;color:#b3145f;border:1px solid #f7bcd8;}
+.pill-house .was{color:var(--text-dim);text-decoration:line-through;text-decoration-color:var(--lg-pink);text-decoration-thickness:1.5px;margin-right:6px;font-weight:600;}
+
+/* Deliverable cards */
+.deliv-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px;}
+.deliv-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;position:relative;overflow:hidden;}
+.deliv-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--lg-gradient);}
+.deliv-card h3{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+.deliv-card p{font-size:13px;color:var(--text-mid);line-height:1.65;}
+.deliv-card.wide{grid-column:1 / -1;}
+
+/* Audience grid */
+.aud-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:6px;}
+.aud-card{background:var(--lg-black);color:var(--lg-white);border-radius:10px;padding:16px 16px 14px;}
+.aud-card .a-title{font-family:var(--font-display);font-size:16px;letter-spacing:.8px;text-transform:uppercase;margin-bottom:5px;background:var(--lg-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.aud-card p{font-size:12px;color:rgba(255,255,255,.65);line-height:1.55;}
+
+/* Tier list */
+.rec-list{list-style:none;margin:4px 0;}
+.rec-list li{font-size:14px;color:var(--text-mid);line-height:1.6;margin-bottom:11px;padding-left:18px;position:relative;}
+.rec-list li::before{content:'\2192';position:absolute;left:0;color:var(--lg-pink);font-weight:700;}
+.rec-list li strong{color:var(--text);}
+
+/* Roadmap */
+.phase{display:grid;grid-template-columns:72px 1fr;gap:18px;padding:18px 0;border-bottom:1px solid var(--border);}
+.phase:last-child{border-bottom:none;}
+.phase-num{font-family:var(--font-display);font-size:40px;line-height:.95;background:var(--lg-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.phase-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:5px;flex-wrap:wrap;}
+.phase-head h3{font-size:16px;font-weight:700;color:var(--text);}
+.phase-when{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);padding:3px 9px;border-radius:4px;background:var(--green-bg);border:1px solid #bbe3cc;white-space:nowrap;}
+.phase-when.priority{color:#b3145f;background:#fde8f1;border-color:#f7bcd8;}
+.phase p{font-size:13px;color:var(--text-mid);line-height:1.65;}
+
+/* Investment */
+.invest-wrap{background:var(--lg-black);color:var(--lg-white);border-radius:var(--radius);padding:34px 38px;margin-bottom:22px;position:relative;overflow:hidden;}
+.invest-wrap::after{content:'';position:absolute;bottom:-180px;left:-140px;width:440px;height:440px;border-radius:50%;background:radial-gradient(circle,rgba(255,38,142,.20) 0%,transparent 70%);pointer-events:none;}
+.invest-inner{position:relative;z-index:1;}
+.invest-row{display:grid;grid-template-columns:1.3fr 1fr;gap:36px;align-items:center;}
+.invest-price-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px;}
+.invest-was{font-size:22px;color:rgba(255,255,255,.42);text-decoration:line-through;text-decoration-color:var(--lg-pink);text-decoration-thickness:2px;margin-bottom:2px;font-weight:600;}
+.invest-now{font-family:var(--font-display);font-size:64px;line-height:1;background:var(--lg-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.invest-note{font-size:12px;color:rgba(255,255,255,.55);margin-top:10px;line-height:1.6;}
+.invest-includes{list-style:none;}
+.invest-includes li{font-size:13.5px;color:rgba(255,255,255,.82);padding:8px 0 8px 26px;border-bottom:1px solid rgba(255,255,255,.10);position:relative;line-height:1.5;}
+.invest-includes li:last-child{border-bottom:none;}
+.invest-includes li::before{content:'\2713';position:absolute;left:2px;top:8px;font-weight:700;background:var(--lg-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.invest-includes li strong{color:var(--lg-white);}
+
+/* Steps */
+.steps{display:flex;flex-direction:column;gap:11px;margin-top:4px;}
+.step{display:grid;grid-template-columns:38px 1fr;gap:14px;align-items:flex-start;padding:15px 18px;background:var(--surface);border:1px solid var(--border);border-radius:10px;}
+.step-num{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--lg-gradient);color:var(--lg-white);font-size:14px;font-weight:700;}
+.step-body{font-size:13.5px;line-height:1.6;color:var(--text-mid);padding-top:4px;}
+.step-body strong{color:var(--text);font-weight:600;}
+
+/* Footer */
+.footer{background:#0a0a0a;color:#fff;padding:26px 38px;display:flex;align-items:center;justify-content:space-between;border-radius:var(--radius);margin-top:4px;flex-wrap:wrap;gap:14px;}
+.footer-brand{font-family:var(--font-display);font-size:19px;letter-spacing:2.5px;text-transform:uppercase;}
+.footer-sub{font-size:11px;color:rgba(255,255,255,.5);margin-top:4px;}
+.footer-right{text-align:right;font-size:12px;color:rgba(255,255,255,.55);line-height:1.7;}
+
+@media (max-width:860px){
+  .kpi-row,.aud-grid{grid-template-columns:repeat(2,1fr);}
+  .deliv-grid,.invest-row{grid-template-columns:1fr;}
+  .hero-heading{font-size:38px;}
+}
+@media print{
+  *,*::before,*::after{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+  @page{size:Letter;margin:11mm;}
+  body{background:#fff;font-size:12px;}
+  .topbar{position:static;}
+  .section,.invest-wrap{box-shadow:none;break-inside:avoid;border:1px solid #e5e5e5!important;}
+  .hero{padding:34px 30px;}
+  .hero-heading{font-size:40px;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-brand grad-text">LinkGraph</div>
+  <div class="topbar-meta">Campaign Proposal &middot; Center for Responsible Food Business &middot; June 2026</div>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Proposal &middot; Authority + Brand-Demand Campaign</div>
+    <h1 class="hero-heading">Own the Search Results<br>for <span class="grad-text">Every Kroger Director</span></h1>
+    <p class="hero-sub">A full-scope authority and brand-demand campaign across CRFB's 8 board-member microsites - built to put your pages in front of the people who can end this. Durable rankings, no tricks that spike and get burned.</p>
+    <div class="hero-prep">
+      <div>
+        <div class="prep-label">Prepared For</div>
+        <div class="prep-val">Brian Alexander <span>&middot; Center for Responsible Food Business</span></div>
+      </div>
+      <div>
+        <div class="prep-label">Prepared By</div>
+        <div class="prep-val">LinkGraph <span>&middot; June 2026</span></div>
+      </div>
+      <div>
+        <div class="prep-label">Following</div>
+        <div class="prep-val">Discovery call <span>&middot; June 11, 2026</span></div>
+      </div>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Target Microsites</div><span class="kpi-value">8</span><div class="kpi-sub">one per Kroger director</div></div>
+      <div class="kpi-card"><div class="kpi-label">Authority Links</div><span class="kpi-value">40-80</span><div class="kpi-sub">5-10 per site &middot; DA 40-49</div></div>
+      <div class="kpi-card"><div class="kpi-label">Name Searches / Mo</div><span class="kpi-value">~2.4K</span><div class="kpi-sub">across the measurable names</div></div>
+      <div class="kpi-card"><div class="kpi-label">Rollout</div><span class="kpi-value">15-30</span><div class="kpi-sub">days to full deployment</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="report">
+
+  <!-- 01 THE MISSION -->
+  <div class="section" id="mission">
+    <div class="sec-num">01</div>
+    <h2 class="sec-title">The Mission</h2>
+    <div class="sec-rule"></div>
+    <p class="narrative">Kroger walked back its cage-free egg commitment. CRFB's campaign puts that decision at the feet of the <strong>eight individuals with the power to reverse it</strong> - the board of directors. Each director has a dedicated microsite. Our job is to make those pages <strong>unavoidable</strong> whenever those names are searched.</p>
+    <p class="narrative">These are <strong>name-interception pages</strong>, not traffic plays. The exact-match domains (<span class="mono">MeetRonSargent.com</span>, <span class="mono">WhoIsKevinBrown.com</span>) are built precisely for navigational and "who is X" intent. Search volume is low by design - <strong>the value is who sees it, not how many.</strong></p>
+    <div class="subsec-label">Who we are putting these pages in front of</div>
+    <div class="aud-grid">
+      <div class="aud-card"><div class="a-title">The Directors</div><p>People search their own names. Every time a director does, the campaign is waiting.</p></div>
+      <div class="aud-card"><div class="a-title">Journalists</div><p>Reporters covering Kroger vet board members by name - and cite what ranks.</p></div>
+      <div class="aud-card"><div class="a-title">Investors</div><p>Proxy advisors and institutional investors research governance before votes.</p></div>
+      <div class="aud-card"><div class="a-title">Recruiters</div><p>Board seats are reputational assets. Search results follow directors to their next one.</p></div>
+    </div>
+    <div class="info-note" style="margin-top:18px;"><strong>Built to last:</strong> everything in this campaign is white-hat authority building - real placements on real sites. No tactics that spike for a month and get filtered out. If Kroger's side starts spending to drown this out, the equity we build keeps compounding; theirs starts from zero.</div>
+  </div>
+
+  <!-- 02 WHAT WE'RE BUILDING -->
+  <div class="section" id="scope">
+    <div class="sec-num">02</div>
+    <h2 class="sec-title">What We're Building</h2>
+    <div class="sec-rule"></div>
+    <p class="narrative">Five workstreams, all included in this engagement. Off-site authority is the backbone; everything else multiplies it.</p>
+    <div class="deliv-grid">
+      <div class="deliv-card">
+        <h3>Off-Site Authority Links</h3>
+        <p><strong>5-10 editorial backlinks per microsite (40-80 total)</strong> in the DA 40-49 band, anchored to each director's name and company-qualified terms. The range is deliberate: a small keyword universe means anchor text has to rotate, and as authority banks we can shift to fewer, higher-DA placements rather than repeating anchors monthly.</p>
+      </div>
+      <div class="deliv-card">
+        <h3>Brand-Demand Campaigns</h3>
+        <p>Organic campaigns that lift branded search volume for each director's name. This is the engine that makes exact-match domains rank - search engines reward domains that people actually look for.</p>
+      </div>
+      <div class="deliv-card">
+        <h3>OTTO Optimization <span class="pill pill-house"><span class="was">$1,000</span>On the House</span></h3>
+        <p>Our AI optimization engine, auto-installed and run across all eight microsites - page titles, meta descriptions, header structure, and schema, dialed in automatically. Served so AI crawlers that skip client-side JavaScript still see the fully optimized pages. There is no point building links to pages that are not optimized to receive them - so this is included at no cost.</p>
+      </div>
+      <div class="deliv-card">
+        <h3>Cloud Stacks <span class="pill pill-free">Included &middot; No Charge</span></h3>
+        <p>Additional distributed authority signals layered onto each of the eight properties - extra reinforcement we are throwing in because the mission matters to us.</p>
+      </div>
+      <div class="deliv-card wide">
+        <h3>Digital PR <span class="pill pill-explore">Exploratory</span></h3>
+        <p>We will attempt press-release distribution for the campaign. Straight talk: this space is contested, and some publisher networks may decline the content. Where one network says no, we route to another - and we report exactly what landed.</p>
+      </div>
+      <div class="deliv-card wide">
+        <h3>Month-One Fast Start</h3>
+        <p>Manual link building begins <strong>immediately</strong> while our SEO team completes deep keyword research in parallel. You do not wait for a strategy deck to see placements - the campaign is moving inside the first week and fully deployed within the 15-30 day rollout window.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 KEYWORD BATTLEFIELD -->
+  <div class="section" id="keywords">
+    <div class="sec-num">03</div>
+    <h2 class="sec-title">The Keyword Battlefield</h2>
+    <div class="sec-rule"></div>
+    <p class="narrative">Live data from Search Atlas (US, June 2026). Each page's head term is its target's name - the term the domain is built to own.</p>
+    <table class="data-table">
+      <thead><tr><th>Microsite</th><th>Head Term</th><th>Vol / Mo</th><th>Traffic Pot.</th><th>Difficulty</th><th>Intent</th></tr></thead>
+      <tbody>
+        <tr><td><strong>MeetRonSargent.com</strong></td><td><span class="mono">ron sargent</span></td><td class="num">1,285</td><td class="num">2,600</td><td><span class="pill pill-hard">Hard &middot; 66</span></td><td>Navigational</td></tr>
+        <tr><td><strong>WhoIsMarkSutton.com</strong></td><td><span class="mono">mark sutton</span></td><td class="num">741</td><td class="num">741</td><td><span class="pill pill-hard">Hard &middot; 49</span></td><td>Informational</td></tr>
+        <tr><td><strong>WhoIsAnneGates.com</strong></td><td><span class="mono">anne gates</span></td><td class="num">132</td><td class="num">280</td><td><span class="pill pill-med">Medium &middot; 24</span></td><td>Navigational</td></tr>
+        <tr><td><strong>AshokVemuri.com</strong></td><td><span class="mono">ashok vemuri</span></td><td class="num">119</td><td class="num">220</td><td><span class="pill pill-hard">Hard &middot; 66</span></td><td>Navigational</td></tr>
+        <tr><td><strong>KarenHoguet.com</strong></td><td><span class="mono">karen hoguet</span></td><td class="num">40</td><td class="num">80</td><td><span class="pill pill-hard">Hard &middot; 68</span></td><td>Commercial</td></tr>
+        <tr><td><strong>NoraAufreiter.com</strong></td><td><span class="mono">nora aufreiter</span></td><td class="num">28</td><td class="num">70</td><td><span class="pill pill-hard">Hard &middot; 65</span></td><td>Informational</td></tr>
+        <tr><td><strong>AmandaSourry.com</strong></td><td><span class="mono">amanda sourry</span></td><td class="num">24</td><td class="num">60</td><td><span class="pill pill-hard">Hard &middot; 62</span></td><td>Informational</td></tr>
+        <tr><td><strong>WhoIsKevinBrown.com</strong></td><td><span class="mono">kevin brown</span></td><td class="num">n/a</td><td class="num">-</td><td><span class="pill pill-qual">Qualified terms only</span></td><td>-</td></tr>
+      </tbody>
+    </table>
+    <div class="info-note"><strong>Why the "Hard" scores do not scare us:</strong> those difficulty numbers reflect the domain authority of who currently ranks - LinkedIn profiles, Bloomberg exec stubs, company bios. They are placeholder pages, not content fighting for the name. An exact-match domain with deep, structured content plus the authority we build can realistically crack page 1 for the winnable names within a few months.</div>
+    <div class="subsec-label">How we prioritize</div>
+    <ul class="rec-list">
+      <li><strong>Tier 1 - Ron Sargent:</strong> by far the highest volume (1,285/mo) and intent. The page that gets the most firepower.</li>
+      <li><strong>Tier 2 - Gates, Vemuri, Aufreiter, Hoguet, Sourry:</strong> modest volume but low real competition. Exact-match domain plus content depth wins these SERPs.</li>
+      <li><strong>Tier 3 - Sutton and Brown:</strong> the bare names are too generic to win outright, so we target qualified terms exclusively - <span class="mono">mark sutton international paper</span>, <span class="mono">kevin brown kroger board</span> - where intent is highest anyway.</li>
+    </ul>
+    <div class="subsec-label">Where the real traffic is - the issue cluster</div>
+    <p class="narrative" style="margin-bottom:14px;">The name pages intercept the right people; the <strong>issue terms carry the volume</strong>. These belong on the parent domain, feeding authority and visitors down to all eight pages (see Phase 2).</p>
+    <table class="data-table">
+      <thead><tr><th>Term</th><th>Vol / Mo</th><th>Why It Matters</th></tr></thead>
+      <tbody>
+        <tr><td><span class="mono">kroger price gouging</span></td><td class="num">338</td><td>Highest-volume grievance tied to the campaign</td></tr>
+        <tr><td><span class="mono">kroger board of directors</span></td><td class="num">212</td><td>Searchers looking for exactly the people these sites name</td></tr>
+        <tr><td><span class="mono">kroger cage free eggs</span></td><td class="num">196</td><td>The broken commitment itself - cleanest mission tie, most defensible content angle</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 04 ROADMAP -->
+  <div class="section" id="roadmap">
+    <div class="sec-num">04</div>
+    <h2 class="sec-title">Roadmap</h2>
+    <div class="sec-rule"></div>
+    <div class="phase">
+      <div class="phase-num">0</div>
+      <div>
+        <div class="phase-head"><h3>Access + Setup</h3><span class="phase-when">Days 1-7</span></div>
+        <p>Confirm the eight target URLs, sort site access with Taylor, auto-install OTTO across all eight microsites so the pages are optimized before any links point at them, and baseline every name and qualifier term in Search Atlas so progress is measured from day one.</p>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-num">1</div>
+      <div>
+        <div class="phase-head"><h3>Fire the Cannons</h3><span class="phase-when priority">Days 7-30 &middot; Highest Priority</span></div>
+        <p>Manual link building goes live across all eight microsites while deep keyword research completes in parallel. Brand-demand campaigns launch, cloud stacks deploy, and we test digital PR distribution to see which networks accept the content.</p>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-num">2</div>
+      <div>
+        <div class="phase-head"><h3>Scale + Refine</h3><span class="phase-when">Months 2-3</span></div>
+        <p>Rotate anchors and selectively step up to higher-DA placements as equity banks. Build the issue-cluster content hub on <span class="mono">responsiblefoodbusiness.org</span> - led by <span class="mono">kroger cage free eggs</span> - to pull real traffic and feed link equity down to all eight name pages.</p>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-num">3</div>
+      <div>
+        <div class="phase-head"><h3>Harden + Playbook</h3><span class="phase-when">Months 3+</span></div>
+        <p>Defend rankings if Kroger's side responds, measure SERP ownership per director, and package the repeatable playbook - so when this campaign wins and the next target is chosen, we spin up in days instead of weeks.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 NEAR FUTURE POSSIBILITIES -->
+  <div class="section" id="future">
+    <div class="sec-num">05</div>
+    <h2 class="sec-title">Near Future Possibilities</h2>
+    <div class="sec-rule"></div>
+    <p class="narrative">Not part of this engagement's committed scope - but natural next moves once the campaign is rolling, and worth flagging now so Taylor can see where this can go.</p>
+    <div class="deliv-grid">
+      <div class="deliv-card">
+        <h3>CMS Migration</h3>
+        <p>If any microsite outgrows Framer and needs deeper control (WordPress or similar), we scope that as a standalone item - at or near cost, same as everything else here.</p>
+      </div>
+      <div class="deliv-card">
+        <h3>Parent-Domain Build-Out</h3>
+        <p>Beyond the Phase 2 issue hub: a fuller authority program for <span class="mono">responsiblefoodbusiness.org</span> itself, so the org carries weight journalists can cite - the way established advocacy organizations rank today.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 INVESTMENT -->
+  <div class="invest-wrap" id="investment">
+    <div class="invest-inner">
+      <div class="sec-num" style="color:var(--lg-pink);">06</div>
+      <h2 class="sec-title" style="color:#fff;">Investment</h2>
+      <div class="sec-rule"></div>
+      <div class="invest-row">
+        <div>
+          <div class="invest-price-label">Full-Scope Campaign Value</div>
+          <div class="invest-was">$25,000</div>
+          <div class="invest-price-label" style="margin-top:14px;">CRFB Mission Rate</div>
+          <div class="invest-now">$10,000</div>
+          <p class="invest-note">Everything listed in this proposal, included. No upsells, no padding - this is priced to cover our direct campaign costs. Sophia asked us to make it work, and this is what that looks like.</p>
+        </div>
+        <ul class="invest-includes">
+          <li><strong>40-80 authority links</strong> &middot; DA 40-49 &middot; all 8 microsites</li>
+          <li><strong>Brand-demand campaigns</strong> for every director name</li>
+          <li><strong>OTTO optimization</strong> on all 8 microsites &middot; on the house</li>
+          <li><strong>Cloud stacks</strong> on all 8 properties &middot; no charge</li>
+          <li><strong>Digital PR distribution</strong> &middot; exploratory, fully reported</li>
+          <li><strong>Month-one manual fast start</strong> + deep keyword research</li>
+          <li><strong>Monthly reporting</strong> &middot; placements, rankings, SERP ownership</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 07 NEXT STEPS -->
+  <div class="section" id="next">
+    <div class="sec-num">07</div>
+    <h2 class="sec-title">Next Steps</h2>
+    <div class="sec-rule"></div>
+    <div class="steps">
+      <div class="step"><span class="step-num">1</span><div class="step-body"><strong>Share this with Taylor.</strong> We reconnect Monday, June 15 to walk through any questions together.</div></div>
+      <div class="step"><span class="step-num">2</span><div class="step-body"><strong>Confirm the eight target URLs and site access.</strong> That is everything we need from your side to start.</div></div>
+      <div class="step"><span class="step-num">3</span><div class="step-body"><strong>We kick off Phase 0 within 48 hours</strong> of the go-ahead - baselines set, link prospecting underway.</div></div>
+      <div class="step"><span class="step-num">4</span><div class="step-body"><strong>First placements live inside the 15-30 day window,</strong> with monthly reporting on placements, rankings, and SERP ownership per director.</div></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>
+      <div class="footer-brand grad-text">LinkGraph</div>
+      <div class="footer-sub">Prepared for the Center for Responsible Food Business &middot; June 2026</div>
+    </div>
+    <div class="footer-right">
+      Keyword data: Search Atlas (US) &middot; June 2026<br>
+      Questions: ryan.mcgovern@linkgraph.io
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
